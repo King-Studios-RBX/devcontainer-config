@@ -18,11 +18,24 @@ Shared [Dev Container](https://containers.dev/) configuration for King-Studios-R
 ## What's Included
 
 ```
-├── docker/Dockerfile        # Base image — oven/bun:debian with system packages
+├── cspell/
+│   └── cspell-base.json     # Centralized cspell config with merged word list
+├── docker/
+│   └── Dockerfile           # Base image — oven/bun:debian with system packages
 ├── devcontainer.json        # VS Code settings, extensions, post-create setup
 ├── .env.example             # Template for required environment variables
 └── .github/workflows/       # CI validation
 ```
+
+## Centralized cspell Configuration
+
+The `cspell/cspell-base.json` file contains:
+
+- **Roblox dictionaries** via [`@isentinel/dict-rbxts`](https://www.npmjs.com/package/@isentinel/dict-rbxts), [`@isentinel/dict-roblox`](https://www.npmjs.com/package/@isentinel/dict-roblox), and [`@isentinel/dict-wally`](https://www.npmjs.com/package/@isentinel/dict-wally)
+- **Standard ignore paths** for all King-Studios-RBX repos
+- **Merged word list** from all 6 module repos (360+ project-specific terms)
+
+Each module repo's `cspell.json` should import these dictionaries and include the shared word list. See the individual repo configs for the canonical format.
 
 ## Adding to a New Repo
 
