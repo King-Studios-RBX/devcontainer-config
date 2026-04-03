@@ -1,54 +1,87 @@
 # devcontainer-config
 
-Shared devcontainer configuration for all Anime Reborn repos in the King-Studios-RBX organization.
+Shared [Dev Container](https://containers.dev/) configuration for King-Studios-RBX module repos. Provides a consistent, reproducible development environment with Bun, Rokit, roblox-ts tooling, and all required VS Code extensions.
 
-## What's included
+## Repos Using This Config
 
-- **docker/Dockerfile** — Base image (Bun on Debian) with common system packages
-- **devcontainer.json** — VS Code settings, extensions, and post-create setup (Rokit, Bun install, etc.)
-- **.env.example** — Template for environment variables (NODE_AUTH_TOKEN for GitHub Packages)
+| Repository | Description |
+|---|---|
+| [Interface](https://github.com/King-Studios-RBX/Anime-Reborn-Interface) | UI layer |
+| [Gameplay-Core](https://github.com/King-Studios-RBX/Anime-Reborn-Gameplay-Core) | Core gameplay logic |
+| [Lobby](https://github.com/King-Studios-RBX/Anime-Reborn-Lobby) | Lobby systems |
+| [Common](https://github.com/King-Studios-RBX/Anime-Reborn-Common) | Shared utilities and types |
+| [Configuration](https://github.com/King-Studios-RBX/Anime-Reborn-Configuration) | Game configuration data |
+| [Assets](https://github.com/King-Studios-RBX/Anime-Reborn-Assets) | Asset pipeline |
 
-## Usage
+> **Note:** The main [Anime-Reborn](https://github.com/King-Studios-RBX/Anime-Reborn) repo does **not** use this config.
 
-### Option 1: Copy (recommended)
+## What's Included
 
-Copy the `.devcontainer/` folder contents into your repo:
-
-```bash
-# From your repo root
-mkdir -p .devcontainer
-cp /path/to/devcontainer-config/docker/Dockerfile .devcontainer/Dockerfile
-cp /path/to/devcontainer-config/devcontainer.json .devcontainer/devcontainer.json
+```
+├── docker/Dockerfile        # Base image — oven/bun:debian with system packages
+├── devcontainer.json        # VS Code settings, extensions, post-create setup
+├── .env.example             # Template for required environment variables
+└── .github/workflows/       # CI validation
 ```
 
-Then customize the `"name"` field in `devcontainer.json` to match your repo (e.g., `"Anime Reborn Lobby Development"`).
+## Adding to a New Repo
 
-### Option 2: Git submodule
+1. Copy the `.devcontainer/` folder structure into your repo:
 
-```bash
-git submodule add https://github.com/King-Studios-RBX/devcontainer-config.git .devcontainer-shared
-```
+   ```bash
+   mkdir -p .devcontainer
+   cp docker/Dockerfile .devcontainer/Dockerfile
+   cp devcontainer.json .devcontainer/devcontainer.json
+   cp .env.example .env.example
+   ```
 
-Then create a `.devcontainer/devcontainer.json` that references the shared Dockerfile.
+2. Update the `"name"` field in `.devcontainer/devcontainer.json` to match your project (e.g., `"Lobby Development"`).
 
-## Environment Setup
+3. Commit the `.devcontainer/` folder and `.env.example` to your repo.
 
-1. Copy `.env.example` to `.env` in your repo root
-2. Fill in `NODE_AUTH_TOKEN` with a GitHub PAT that has `read:packages` scope
-3. The devcontainer's `postCreateCommand` will automatically source `.env` and run `bun install`
+## Developer Setup
 
-## Customization
+1. **Create a GitHub PAT** with the `read:packages` scope:
+   [https://github.com/settings/tokens](https://github.com/settings/tokens) → Generate new token (classic)
 
-Each repo should customize at minimum:
-- `"name"` in `devcontainer.json` — set to your project name
-- Any repo-specific VS Code settings or extensions can be added on top
+2. **Copy the environment template:**
 
-## Repos using this config
+   ```bash
+   cp .env.example .env
+   ```
 
-- [Anime-Reborn](https://github.com/King-Studios-RBX/Anime-Reborn)
-- [Anime-Reborn-Interface](https://github.com/King-Studios-RBX/Anime-Reborn-Interface)
-- [Anime-Reborn-Gameplay-Core](https://github.com/King-Studios-RBX/Anime-Reborn-Gameplay-Core)
-- [Anime-Reborn-Lobby](https://github.com/King-Studios-RBX/Anime-Reborn-Lobby)
-- [Anime-Reborn-Common](https://github.com/King-Studios-RBX/Anime-Reborn-Common)
-- [Anime-Reborn-Configuration](https://github.com/King-Studios-RBX/Anime-Reborn-Configuration)
-- [Anime-Reborn-Assets](https://github.com/King-Studios-RBX/Anime-Reborn-Assets)
+3. **Fill in your token** in `.env`:
+
+   ```bash
+   export NODE_AUTH_TOKEN="ghp_your_token_here"
+   ```
+
+4. **Open the repo in VS Code** and run the command:
+   `Dev Containers: Reopen in Container`
+
+The container will automatically install Rokit tools and run `bun install` using your token for `@king-studios-rbx` package authentication.
+
+### Authentication Note
+
+Package authentication is handled via **`bunfig.toml`**, not `.npmrc`. The `NODE_AUTH_TOKEN` environment variable is read by Bun's config to authenticate against GitHub Packages. No `.npmrc` file is needed.
+
+## Included Extensions
+
+| Extension | Purpose |
+|---|---|
+| `oven.bun-vscode` | Bun runtime support |
+| `biomejs.biome` | Formatter & linter |
+| `roblox-ts.vscode-roblox-ts` | roblox-ts language support |
+| `flamework.flamework-vscode` | Flamework framework support |
+| `johnnymorganz.luau-lsp` | Luau language server |
+| `johnnymorganz.stylua` | Lua/Luau formatter |
+| `kampfkarren.selene-vscode` | Selene linter |
+| `streetsidesoftware.code-spell-checker` | Spell checking |
+| `EditorConfig.EditorConfig` | EditorConfig support |
+| `codecov.codecov` | Codecov YAML validation |
+| `eamodio.gitlens` | Git history & blame |
+| `github.vscode-github-actions` | GitHub Actions support |
+
+## License
+
+[MIT](LICENSE) © King-Studios-RBX

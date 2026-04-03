@@ -1,0 +1,57 @@
+name: Validate Devcontainer Config
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate devcontainer.json is valid JSONC
+        run: |
+          python3 -c "
+          import json, sys
+          with open('devcontainer.json') as f:
+              lines = f.readlines()
+          clean = ''.join(l for l in lines if not l.lstrip().startswith('//'))
+          try:
+              json.loads(clean)
+              print('✅ devcontainer.json is valid JSONC')
+          except json.JSONDecodeError as e:
+              print(f'❌ devcontainer.json is invalid: {e}')
+              sys.exit(1)
+          "
+
+      - name: Validate .env.example exists
+        run: |
+          if [ -f .env.example ]; then
+            echo "✅ .env.example exists"
+          else
+            echo "❌ .env.example not found"
+            exit 1
+          fi
+
+      - name: Validate Dockerfile exists
+        run: |
+          if [ -f docker/Dockerfile ]; then
+            echo "✅ docker/Dockerfile exists"
+          else
+            echo "❌ docker/Dockerfile not found"
+            exit 1
+          fi
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -f docker/Dockerfile -t devcontainer-test .
+
+      - name: Verify Bun is available
+        run: docker run --rm devcontainer-test bun --version

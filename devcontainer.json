@@ -1,5 +1,7 @@
+// Shared devcontainer configuration for King-Studios-RBX module repos.
+// See README.md for setup instructions.
 {
-    "name": "Anime Reborn Development",
+    "name": "King-Studios Development",
     "build": {
         "dockerfile": "Dockerfile"
     },
