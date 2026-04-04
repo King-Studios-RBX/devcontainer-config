@@ -1,0 +1,2 @@
+[install.scopes]
+"@king-studios-rbx" = { token = "$NODE_AUTH_TOKEN", url = "https://npm.pkg.github.com/" }
