@@ -11,19 +11,58 @@ try {
 		process.exit(0);
 	}
 
-	// Go up from scripts/ → package root → @king-studios-rbx/ → node_modules/ → project root
-	const projectRoot = path.resolve(__dirname, "..", "..", "..", "..");
+	// Find the project root by walking up from the real script location
+	// to find the first directory that contains a package.json (that isn't ours)
+	// This handles both npm/yarn (flat node_modules) and bun (.bun symlink layout)
+	function findProjectRoot() {
+		// Strategy 1: Look for node_modules in ancestors and go up one more
+		let dir = __dirname;
+		for (let i = 0; i < 20; i++) {
+			const parent = path.dirname(dir);
+			if (parent === dir) break; // hit filesystem root
 
-	// Sanity check: make sure we're actually inside node_modules
-	const expectedNodeModules = path.resolve(__dirname, "..", "..", "..");
-	if (path.basename(expectedNodeModules) !== "node_modules") {
-		// We're not inside node_modules (e.g. running from the package itself during development)
-		console.log("[devcontainer-config] Not inside node_modules, skipping generation");
+			// Check if this directory has a node_modules and a package.json
+			// and is NOT our package (i.e., not devcontainer-config)
+			const pkgPath = path.join(parent, "package.json");
+			const nmPath = path.join(parent, "node_modules");
+			if (fs.existsSync(pkgPath) && fs.existsSync(nmPath)) {
+				try {
+					const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+					if (pkg.name !== "@king-studios-rbx/devcontainer-config") {
+						return parent;
+					}
+				} catch (_) {
+					// ignore parse errors
+				}
+			}
+			dir = parent;
+		}
+
+		// Strategy 2: Use INIT_CWD if available (set by npm/yarn/bun during install)
+		if (process.env.INIT_CWD) {
+			return process.env.INIT_CWD;
+		}
+
+		return null;
+	}
+
+	const projectRoot = findProjectRoot();
+	if (!projectRoot) {
+		console.log("[devcontainer-config] Could not determine project root, skipping generation");
 		process.exit(0);
 	}
 
-	// Load base config
-	const baseConfigPath = path.resolve(__dirname, "..", "devcontainer-base.json");
+	// Load base config — find it relative to the symlink or real path
+	let baseConfigPath = path.resolve(__dirname, "..", "devcontainer-base.json");
+	if (!fs.existsSync(baseConfigPath)) {
+		// Try via the project's node_modules (handles bun symlinks)
+		baseConfigPath = path.join(projectRoot, "node_modules", "@king-studios-rbx", "devcontainer-config", "devcontainer-base.json");
+	}
+	if (!fs.existsSync(baseConfigPath)) {
+		console.warn("[devcontainer-config] Could not find devcontainer-base.json, skipping");
+		process.exit(0);
+	}
+
 	const baseConfig = JSON.parse(fs.readFileSync(baseConfigPath, "utf8"));
 
 	// Set paths for consuming repo
