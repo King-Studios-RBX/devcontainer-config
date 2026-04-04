@@ -1,0 +1,54 @@
+{
+	"name": "King-Studios Development",
+	"updateRemoteUserUID": false,
+	"postCreateCommand": "rokit install --no-trust-check && echo 'export PATH=\"$HOME/.rokit/bin:$HOME/.local/bin:$PATH\"' >> ~/.zshrc && . ~/.zshrc && if [ -f .env ]; then set -a && . .env && set +a; fi && bun install",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"js/ts.tsdk.path": "node_modules/typescript/lib",
+				"luau-lsp.sourcemap.autogenerate": false,
+				"luau-lsp.sourcemap.enabled": false,
+				"luau-lsp.diagnostics.workspace": false,
+				"luau-lsp.ignoreGlobs": ["**/include/**", "**/node_modules/**", "**/dist/**"],
+				"files.eol": "\n",
+				"editor.codeActionsOnSave": {
+					"source.organizeImports.biome": "explicit"
+				},
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "biomejs.biome",
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"cSpell.enableFiletypes": ["typescript", "typescriptreact", "lua"],
+				"cSpell.ignorePaths": [
+					"node_modules/**",
+					"dist/**",
+					"build/**",
+					"include/**",
+					".devcontainer/**",
+					".github/**",
+					".vscode/**",
+					"*.project.json",
+					"assets_towers/**"
+				]
+			},
+			"extensions": [
+				"oven.bun-vscode",
+				"biomejs.biome",
+				"roblox-ts.vscode-roblox-ts",
+				"streetsidesoftware.code-spell-checker",
+				"EditorConfig.EditorConfig",
+				"flamework.flamework-vscode",
+				"codecov.codecov",
+				"kampfkarren.selene-vscode",
+				"johnnymorganz.stylua",
+				"johnnymorganz.luau-lsp",
+				"eamodio.gitlens",
+				"github.vscode-github-actions"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/wxw-matt/devcontainer-features/command_runner:latest": {
+			"command1": "curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash"
+		}
+	}
+}

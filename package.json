@@ -1,12 +1,17 @@
 {
 	"name": "@king-studios-rbx/devcontainer-config",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Shared devcontainer, cspell, and development configuration for King-Studios-RBX repos",
 	"main": "index.js",
+	"scripts": {
+		"postinstall": "node scripts/postinstall.js"
+	},
 	"files": [
 		"cspell/",
 		"devcontainer.json",
+		"devcontainer-base.json",
 		"docker/",
+		"scripts/",
 		".env.example"
 	],
 	"publishConfig": {
